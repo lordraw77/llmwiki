@@ -1,0 +1,41 @@
+# -----------------------------------------------------------------------------
+# Keep the build context small and the image clean. Anything matched here is
+# never sent to the Docker daemon.
+# -----------------------------------------------------------------------------
+
+# Python caches / build artefacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments (the image builds its own)
+.venv/
+venv/
+env/
+
+# Secrets and runtime data (mount these instead of baking them in)
+.env
+data/
+*.log
+
+# Local integration test scripts (not needed inside the image)
+test_http.py
+test_stdio.py
+
+# Tooling / VCS / editor
+.git/
+.gitignore
+.github/
+.idea/
+.vscode/
+.DS_Store
+
+# Docker / make files themselves
+Dockerfile
+.dockerignore
+docker-compose.yml
+Makefile
+scripts/

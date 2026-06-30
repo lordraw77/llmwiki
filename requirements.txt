@@ -1,0 +1,44 @@
+# ---------------------------------------------------------------------------
+# Wiki-LLM runtime dependencies
+# ---------------------------------------------------------------------------
+# Pinned with lower bounds to stay reproducible while allowing patch updates.
+# Requires Python 3.10+ (the `mcp` package does not support 3.9).
+# ---------------------------------------------------------------------------
+
+# --- Model Context Protocol (official SDK) ---------------------------------
+mcp>=1.2.0,<2.0
+
+# --- Web framework / ASGI server -------------------------------------------
+fastapi>=0.110,<1.0
+uvicorn[standard]>=0.29,<1.0
+python-multipart>=0.0.9          # required by FastAPI for multipart uploads
+sse-starlette>=2.1               # SSE helpers used by the MCP HTTP transport
+
+# --- Configuration & validation --------------------------------------------
+pydantic>=2.6,<3.0
+pydantic-settings>=2.2,<3.0
+python-dotenv>=1.0
+
+# --- Document parsing -------------------------------------------------------
+pypdf>=4.2                       # PDF text extraction (pure Python)
+markdown-it-py>=3.0              # Markdown tokenisation / markup stripping
+charset-normalizer>=3.3          # robust encoding detection for text files
+python-docx>=1.1                 # .docx parsing (paragraphs + tables)
+
+# --- HTTP client for remote embedding providers ----------------------------
+httpx>=0.27
+
+# --- Vector stores ----------------------------------------------------------
+chromadb>=0.5                    # embedded persistent vector store (default)
+# Provides a modern sqlite3 for ChromaDB on systems whose system sqlite is
+# older than 3.35 (auto-detected and swapped in by wikillm/store/chroma_store.py).
+pysqlite3-binary>=0.5 ; sys_platform == "linux"
+qdrant-client>=1.9               # alternative vector store (local or server)
+
+# --- Numerics ---------------------------------------------------------------
+numpy>=1.26
+
+# --- Optional: local embeddings (heavy, pulls in torch) --------------------
+# Install only if you intend to use EMBEDDING_PROVIDER=local.
+# Imported lazily so the project runs without it when using remote providers.
+sentence-transformers>=2.7
