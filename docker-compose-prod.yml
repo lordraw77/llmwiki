@@ -1,0 +1,55 @@
+# =============================================================================
+# Wiki-LLM — Docker Compose
+# -----------------------------------------------------------------------------
+# Brings up the Wiki-LLM HTTP server (REST + MCP HTTP/SSE) with a persistent
+# data volume. An optional Qdrant service is included behind a profile for when
+# VECTOR_BACKEND=qdrant with a remote server is desired.
+#
+#   docker compose up -d                 # app only (ChromaDB embedded)
+#   docker compose --profile qdrant up   # app + Qdrant server
+#
+# Configuration is read from the .env file (copy from .env.example). When using
+# the bundled Qdrant service, set in .env:
+#   VECTOR_BACKEND=qdrant
+#   QDRANT_URL=http://qdrant:6333
+# =============================================================================
+
+services:
+  wikillm:
+    image: lordraw/llmwiki:latest
+    container_name: wikillm
+    restart: unless-stopped
+    # Run as the image's built-in non-root user (uid 10001). The bind-mounted
+    # ./wikillm-data directory MUST be owned by this uid, otherwise the app
+    # cannot create /data/qdrant (or /data/chroma):
+    #   sudo chown -R 10001:10001 ./wikillm-data ./qdrant-data
+    user: "10001:10001"
+    ports:
+      - "9999:8000"
+    env_file:
+      - .env
+    environment:
+      # Override storage paths to live on the mounted volume regardless of .env.
+      DATA_DIR: /data
+      #CHROMA_PATH: /data/chroma
+      QDRANT_PATH: /data/qdrant
+    volumes:
+      - ./wikillm-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - qdrant
+ 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: wikillm-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./qdrant-data:/qdrant/storage

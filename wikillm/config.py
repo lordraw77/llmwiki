@@ -136,6 +136,12 @@ class Settings(BaseSettings):
     # --- MCP ---------------------------------------------------------------
     mcp_sse_path: str = "/mcp"
 
+    # --- Startup ingestion -------------------------------------------------
+    # When set, the stdio server ingests this file/directory once at startup,
+    # before serving requests. Useful for pre-loading a mounted corpus.
+    ingest_on_start: Optional[str] = None
+    ingest_on_start_recursive: bool = True
+
     # ----------------------------------------------------------------------
     # Validators / normalisers
     # ----------------------------------------------------------------------
@@ -174,7 +180,9 @@ class Settings(BaseSettings):
                 return [item.strip() for item in text.split(",") if item.strip()]
         return value
 
-    @field_validator("api_key", "embedding_api_key", "embedding_base_url", "qdrant_url", "log_file")
+    @field_validator(
+        "api_key", "embedding_api_key", "embedding_base_url", "qdrant_url", "log_file", "ingest_on_start"
+    )
     @classmethod
     def _empty_to_none(cls, value: Optional[str]) -> Optional[str]:
         """Treat empty strings (common in ``.env`` files) as ``None``."""

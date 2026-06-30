@@ -10,8 +10,8 @@
 #   IMAGE_NAME              Repository name.                    Default: llmwiki
 #   VERSION                 Version tag. Default: latest git tag (v0.1.0 ->
 #                           0.1.0), falling back to pyproject.toml.
-#   PLATFORMS               Build platforms.   Default: linux/amd64,linux/arm64
-#   WITH_LOCAL_EMBEDDINGS   "true" to bake in sentence-transformers. Default: false
+#   PLATFORMS               Build platforms.   Default: linux/amd64
+#   WITH_LOCAL_EMBEDDINGS   "true" to bake in sentence-transformers. Default: true
 #   PUSH_LATEST             "true" to also tag/push :latest.    Default: true
 #   DOCKERHUB_TOKEN         If set (with DOCKER_USER), a non-interactive
 #                           `docker login` is performed using this token.
@@ -33,8 +33,8 @@ cd "${PROJECT_ROOT}"
 
 DOCKER_USER="${DOCKER_USER:-lordraw}"
 IMAGE_NAME="${IMAGE_NAME:-llmwiki}"
-PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
-WITH_LOCAL_EMBEDDINGS="${WITH_LOCAL_EMBEDDINGS:-false}"
+PLATFORMS="${PLATFORMS:-linux/amd64}"
+WITH_LOCAL_EMBEDDINGS="${WITH_LOCAL_EMBEDDINGS:-true}"
 PUSH_LATEST="${PUSH_LATEST:-true}"
 
 if [[ -z "${VERSION:-}" ]]; then

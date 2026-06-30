@@ -32,7 +32,9 @@ httpx>=0.27
 chromadb>=0.5                    # embedded persistent vector store (default)
 # Provides a modern sqlite3 for ChromaDB on systems whose system sqlite is
 # older than 3.35 (auto-detected and swapped in by wikillm/store/chroma_store.py).
-pysqlite3-binary>=0.5 ; sys_platform == "linux"
+# Wheels are published for x86_64 Linux only, so the marker is restricted to it
+# (on other arches the system/base-image sqlite is relied upon instead).
+pysqlite3-binary>=0.5 ; sys_platform == "linux" and platform_machine == "x86_64"
 qdrant-client>=1.9               # alternative vector store (local or server)
 
 # --- Numerics ---------------------------------------------------------------

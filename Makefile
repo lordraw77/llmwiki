@@ -24,12 +24,12 @@ ifeq ($(strip $(VERSION)),)
 VERSION      := $(shell sed -n 's/^version = "\(.*\)"/\1/p' pyproject.toml | head -1)
 endif
 IMAGE        := $(DOCKER_USER)/$(IMAGE_NAME)
-PLATFORMS    ?= linux/amd64,linux/arm64
+PLATFORMS    ?= linux/amd64
 PORT         ?= 8000
 PYTHON       ?= python3.12
 
 # Pass WITH_LOCAL_EMBEDDINGS=true to bake in sentence-transformers (large).
-WITH_LOCAL_EMBEDDINGS ?= false
+WITH_LOCAL_EMBEDDINGS ?= true
 
 .DEFAULT_GOAL := help
 
@@ -100,7 +100,7 @@ logs: ## Follow the app container logs.
 
 # --- Docker Hub publish ------------------------------------------------------
 .PHONY: publish
-publish: ## Build & push a multi-arch image to Docker Hub (see scripts/publish.sh).
+publish: ## Build & push the image to Docker Hub (linux/amd64, see scripts/publish.sh).
 	DOCKER_USER=$(DOCKER_USER) IMAGE_NAME=$(IMAGE_NAME) VERSION=$(VERSION) \
 		PLATFORMS=$(PLATFORMS) WITH_LOCAL_EMBEDDINGS=$(WITH_LOCAL_EMBEDDINGS) \
 		./scripts/publish.sh

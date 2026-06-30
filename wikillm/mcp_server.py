@@ -299,6 +299,30 @@ def build_sse_app() -> Starlette:
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+def _ingest_on_start(settings) -> None:
+    """Pre-load a corpus from ``INGEST_ON_START`` before serving requests.
+
+    Runs synchronously at startup so the knowledge base is populated by the time
+    the first tool call arrives. Failures are logged but never abort the server:
+    the tools remain usable even if the initial batch could not be ingested.
+
+    Args:
+        settings: The resolved application settings.
+    """
+    path = settings.ingest_on_start
+    if not path:
+        return
+    logger.info("Startup ingestion of '%s' (recursive=%s)...", path, settings.ingest_on_start_recursive)
+    try:
+        result = get_knowledge_base().ingest_path(
+            path=path,
+            recursive=settings.ingest_on_start_recursive,
+        )
+        logger.info("Startup ingestion complete: %s", result.message)
+    except Exception:
+        logger.exception("Startup ingestion of '%s' failed", path)
+
+
 def main() -> None:
     """Console entry point: configure logging and run the stdio server.
 
@@ -307,6 +331,7 @@ def main() -> None:
     """
     settings = get_settings()
     setup_logging(level=settings.log_level, log_file=settings.log_file)
+    _ingest_on_start(settings)
     asyncio.run(run_stdio())
 
 

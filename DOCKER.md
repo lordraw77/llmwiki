@@ -145,9 +145,9 @@ python3.12 test_http.py --base-url http://localhost:8000
 
 ## Publishing to Docker Hub
 
-`scripts/publish.sh` builds a multi-arch image (`linux/amd64,linux/arm64`) and
-pushes it to `lordraw/llmwiki`, tagging both the version (from the latest git
-tag, e.g. `v0.1.0` → `0.1.0`, falling back to `pyproject.toml`) and `latest`.
+`scripts/publish.sh` builds a `linux/amd64` image (with local embeddings baked
+in) and pushes it to `lordraw/llmwiki`, tagging both the version (from the latest
+git tag, e.g. `v0.1.0` → `0.1.0`, falling back to `pyproject.toml`) and `latest`.
 
 ```bash
 # Interactive login first (or set DOCKERHUB_TOKEN for non-interactive login):
@@ -169,8 +169,8 @@ Useful overrides:
 | `DOCKER_USER` | `lordraw` | Docker Hub namespace (user or org). |
 | `IMAGE_NAME` | `llmwiki` | Repository name. |
 | `VERSION` | latest git tag → `pyproject.toml` | Image version tag. |
-| `PLATFORMS` | `linux/amd64,linux/arm64` | Target architectures. |
-| `WITH_LOCAL_EMBEDDINGS` | `false` | Bake in sentence-transformers. |
+| `PLATFORMS` | `linux/amd64` | Target architectures. |
+| `WITH_LOCAL_EMBEDDINGS` | `true` | Bake in sentence-transformers. |
 | `PUSH_LATEST` | `true` | Also push the `:latest` tag. |
 | `DOCKERHUB_TOKEN` | — | If set, performs a non-interactive `docker login`. |
 
@@ -196,6 +196,7 @@ friendly defaults:
 | `DATA_DIR` | `/data` | Persisted via the `/data` volume. |
 | `CHROMA_PATH` | `/data/chroma` | ChromaDB storage. |
 | `QDRANT_PATH` | `/data/qdrant` | Qdrant embedded storage. |
+| `INGEST_ON_START` | _(unset)_ | File/dir (inside the container) ingested once at stdio startup. |
 | `API_KEY` | _(unset)_ | Auth disabled unless you set it. |
 
 ---

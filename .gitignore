@@ -22,3 +22,7 @@ data/
 .DS_Store
 .idea/
 .vscode/
+
+wikillm-data
+
+qdrant-data

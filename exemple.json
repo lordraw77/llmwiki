@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "wikillm": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "-e", "EMBEDDING_PROVIDER=local",
+        "-e", "EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2",
+        "-v", "/opt/multi-mcp/docs/inventory:/data",
+        "-e", "DATA_DIR=/data",
+        "-e", "QDRANT_PATH=/data/qdrant",
+        "-e", "INGEST_ON_START=/data",
+        "-e", "INGEST_ON_START_RECURSIVE=true",
+        "-e", "COLLECTION_NAME=homelab",
+        "lordraw/llmwiki:latest",
+        "python", "run_stdio.py"
+      ]
+    }
+  }
+}
+{
+  "mcpServers": {
+    "wikillm": {
+      "type": "sse",
+      "url": "http://localhost:8000/mcp/sse"
+    }
+  }
+}
