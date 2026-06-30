@@ -201,14 +201,16 @@ Run the image directly, or use the MCP **stdio** transport from the container:
 ```bash
 make build && make run                                   # HTTP server
 docker run --rm -i --env-file .env -v wikillm-data:/data \
-  wikillm/wikillm:latest python run_stdio.py             # MCP stdio
+  lordraw/llmwiki:latest python run_stdio.py             # MCP stdio
 ```
 
-Publish a multi-arch image to Docker Hub:
+Publish a multi-arch image to Docker Hub (`lordraw/llmwiki`, tag from the latest
+git tag):
 
 ```bash
 docker login
-make publish DOCKER_USER=youruser
+git tag v0.1.0        # the Docker tag is derived from this (v stripped)
+make publish
 ```
 
 ---

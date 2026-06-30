@@ -4,19 +4,25 @@
 # Common developer and Docker workflows. Override variables on the command line:
 #
 #   make build
-#   make publish DOCKER_USER=youruser VERSION=0.1.0
+#   make publish DOCKER_USER=lordraw VERSION=0.1.0
 #   make run-local PORT=9000
 #
 # Variables:
-#   DOCKER_USER  Docker Hub namespace (user or org). Default: wikillm
-#   IMAGE_NAME   Repository name. Default: wikillm
-#   VERSION      Image version tag. Default: project version from pyproject.toml
+#   DOCKER_USER  Docker Hub namespace (user or org). Default: lordraw
+#   IMAGE_NAME   Repository name. Default: llmwiki
+#   VERSION      Image version tag. Default: latest git tag (v0.1.0 -> 0.1.0),
+#                falling back to the version in pyproject.toml.
 #   PLATFORMS    Target platforms for multi-arch publish.
 # =============================================================================
 
-DOCKER_USER  ?= wikillm
-IMAGE_NAME   ?= wikillm
-VERSION      ?= $(shell sed -n 's/^version = "\(.*\)"/\1/p' pyproject.toml | head -1)
+DOCKER_USER  ?= lordraw
+IMAGE_NAME   ?= llmwiki
+# Derive the version from the most recent git tag (stripping a leading "v").
+VERSION      ?= $(shell git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')
+# Fall back to pyproject.toml when there are no tags / not a git checkout.
+ifeq ($(strip $(VERSION)),)
+VERSION      := $(shell sed -n 's/^version = "\(.*\)"/\1/p' pyproject.toml | head -1)
+endif
 IMAGE        := $(DOCKER_USER)/$(IMAGE_NAME)
 PLATFORMS    ?= linux/amd64,linux/arm64
 PORT         ?= 8000

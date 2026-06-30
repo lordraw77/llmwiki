@@ -6,9 +6,10 @@
 # Docker Hub, tagging both the explicit version and `latest`.
 #
 # Environment variables (all optional, with defaults):
-#   DOCKER_USER             Docker Hub namespace (user/org).   Default: wikillm
-#   IMAGE_NAME              Repository name.                    Default: wikillm
-#   VERSION                 Version tag. Default: parsed from pyproject.toml.
+#   DOCKER_USER             Docker Hub namespace (user/org).   Default: lordraw
+#   IMAGE_NAME              Repository name.                    Default: llmwiki
+#   VERSION                 Version tag. Default: latest git tag (v0.1.0 ->
+#                           0.1.0), falling back to pyproject.toml.
 #   PLATFORMS               Build platforms.   Default: linux/amd64,linux/arm64
 #   WITH_LOCAL_EMBEDDINGS   "true" to bake in sentence-transformers. Default: false
 #   PUSH_LATEST             "true" to also tag/push :latest.    Default: true
@@ -16,8 +17,8 @@
 #                           `docker login` is performed using this token.
 #
 # Usage:
-#   DOCKER_USER=youruser ./scripts/publish.sh
-#   DOCKER_USER=youruser VERSION=0.2.0 PLATFORMS=linux/amd64 ./scripts/publish.sh
+#   ./scripts/publish.sh
+#   DOCKER_USER=lordraw VERSION=0.2.0 PLATFORMS=linux/amd64 ./scripts/publish.sh
 #
 # Prerequisites:
 #   * Docker with the buildx plugin.
@@ -30,13 +31,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 cd "${PROJECT_ROOT}"
 
-DOCKER_USER="${DOCKER_USER:-wikillm}"
-IMAGE_NAME="${IMAGE_NAME:-wikillm}"
+DOCKER_USER="${DOCKER_USER:-lordraw}"
+IMAGE_NAME="${IMAGE_NAME:-llmwiki}"
 PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
 WITH_LOCAL_EMBEDDINGS="${WITH_LOCAL_EMBEDDINGS:-false}"
 PUSH_LATEST="${PUSH_LATEST:-true}"
 
 if [[ -z "${VERSION:-}" ]]; then
+    # Prefer the latest git tag (v0.1.0 -> 0.1.0); fall back to pyproject.toml.
+    VERSION="$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')"
+fi
+if [[ -z "${VERSION}" ]]; then
     VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' pyproject.toml | head -1)"
 fi
 if [[ -z "${VERSION}" ]]; then

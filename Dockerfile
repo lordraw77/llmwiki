@@ -15,8 +15,8 @@
 #                          is meant to be used with a remote EMBEDDING_PROVIDER.
 #
 # Examples:
-#   docker build -t wikillm:latest .
-#   docker build --build-arg WITH_LOCAL_EMBEDDINGS=true -t wikillm:local .
+#   docker build -t lordraw/llmwiki:latest .
+#   docker build --build-arg WITH_LOCAL_EMBEDDINGS=true -t lordraw/llmwiki:local .
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -64,7 +64,7 @@ FROM python:3.12-slim AS runtime
 
 LABEL org.opencontainers.image.title="Wiki-LLM" \
       org.opencontainers.image.description="Multi-format knowledge base with REST and MCP (stdio + HTTP/SSE) interfaces." \
-      org.opencontainers.image.source="https://github.com/" \
+      org.opencontainers.image.source="https://github.com/lordraw77/llmwiki" \
       org.opencontainers.image.licenses="MIT"
 
 ENV PYTHONUNBUFFERED=1 \

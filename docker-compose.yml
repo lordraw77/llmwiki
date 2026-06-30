@@ -21,7 +21,7 @@ services:
       args:
         # Set to "true" to bake in local sentence-transformers embeddings.
         WITH_LOCAL_EMBEDDINGS: "true"
-    image: wikillm:latest
+    image: lordraw/llmwiki:latest
     container_name: wikillm
     restart: unless-stopped
     ports:

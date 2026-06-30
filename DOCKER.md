@@ -5,6 +5,9 @@ Wiki-LLM is a multi-format knowledge base that exposes a **REST API** and an
 **MCP server** over two transports (**stdio** and **HTTP/SSE**) from a single
 process.
 
+* Source: <https://github.com/lordraw77/llmwiki>
+* Docker Hub image: `lordraw/llmwiki`
+
 ---
 
 ## Overview
@@ -83,12 +86,12 @@ docker compose --profile qdrant up -d --build   # or: make up-qdrant
 ### 3. Or run the image directly
 
 ```bash
-make build                                       # builds wikillm/wikillm:<version> and :latest
+make build                                       # builds lordraw/llmwiki:<version> and :latest
 docker run --rm -it \
   -p 8000:8000 \
   --env-file .env \
   -v wikillm-data:/data \
-  wikillm/wikillm:latest                          # or: make run
+  lordraw/llmwiki:latest                          # or: make run
 ```
 
 ---
@@ -102,7 +105,7 @@ Claude Desktop) that launches the server as a subprocess, override the command:
 docker run --rm -i \
   --env-file .env \
   -v wikillm-data:/data \
-  wikillm/wikillm:latest python run_stdio.py
+  lordraw/llmwiki:latest python run_stdio.py
 ```
 
 Example `claude_desktop_config.json` entry:
@@ -116,7 +119,7 @@ Example `claude_desktop_config.json` entry:
         "run", "--rm", "-i",
         "--env-file", "/absolute/path/to/.env",
         "-v", "wikillm-data:/data",
-        "wikillm/wikillm:latest",
+        "lordraw/llmwiki:latest",
         "python", "run_stdio.py"
       ]
     }
@@ -143,25 +146,29 @@ python3.12 test_http.py --base-url http://localhost:8000
 ## Publishing to Docker Hub
 
 `scripts/publish.sh` builds a multi-arch image (`linux/amd64,linux/arm64`) and
-pushes it, tagging both the version (from `pyproject.toml`) and `latest`.
+pushes it to `lordraw/llmwiki`, tagging both the version (from the latest git
+tag, e.g. `v0.1.0` → `0.1.0`, falling back to `pyproject.toml`) and `latest`.
 
 ```bash
 # Interactive login first (or set DOCKERHUB_TOKEN for non-interactive login):
 docker login
 
-# Publish under your Docker Hub namespace:
-make publish DOCKER_USER=youruser
+# Publish to lordraw/llmwiki using the defaults:
+make publish
 # equivalently:
-DOCKER_USER=youruser ./scripts/publish.sh
+./scripts/publish.sh
 ```
+
+> The version tag comes from `git describe --tags`. Tag a release first, e.g.
+> `git tag v0.1.0` (the leading `v` is stripped for the Docker tag).
 
 Useful overrides:
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `DOCKER_USER` | `wikillm` | Docker Hub namespace (user or org). |
-| `IMAGE_NAME` | `wikillm` | Repository name. |
-| `VERSION` | from `pyproject.toml` | Image version tag. |
+| `DOCKER_USER` | `lordraw` | Docker Hub namespace (user or org). |
+| `IMAGE_NAME` | `llmwiki` | Repository name. |
+| `VERSION` | latest git tag → `pyproject.toml` | Image version tag. |
 | `PLATFORMS` | `linux/amd64,linux/arm64` | Target architectures. |
 | `WITH_LOCAL_EMBEDDINGS` | `false` | Bake in sentence-transformers. |
 | `PUSH_LATEST` | `true` | Also push the `:latest` tag. |
@@ -170,7 +177,7 @@ Useful overrides:
 Example — single arch, pinned version, no `latest`:
 
 ```bash
-DOCKER_USER=youruser VERSION=0.1.0 PLATFORMS=linux/amd64 PUSH_LATEST=false \
+VERSION=0.1.0 PLATFORMS=linux/amd64 PUSH_LATEST=false \
   ./scripts/publish.sh
 ```
 
